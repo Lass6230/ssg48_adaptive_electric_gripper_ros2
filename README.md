@@ -1,0 +1,1 @@
+# ssg48_adaptive_electric_gripper_ros2
