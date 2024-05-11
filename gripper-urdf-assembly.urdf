@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="gripper-urdf-assembly">
+  <link
+    name="gripper_base_link">
+    <inertial>
+      <origin
+        xyz="1.182E-08 5.7131E-10 0.0085909"
+        rpy="0 0 0" />
+      <mass
+        value="0.034286" />
+      <inertia
+        ixx="1.3936E-05"
+        ixy="-1.3394E-11"
+        ixz="4.8912E-13"
+        iyy="1.368E-05"
+        iyz="1.8413E-13"
+        izz="2.5457E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gripper-urdf-assembly/meshes/gripper_base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gripper-urdf-assembly/meshes/gripper_base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="left_gripper_finger_link">
+    <inertial>
+      <origin
+        xyz="0.0038194 -0.0097866 -0.0093404"
+        rpy="0 0 0" />
+      <mass
+        value="0.011596" />
+      <inertia
+        ixx="4.1951E-06"
+        ixy="7.1027E-07"
+        ixz="3.2917E-07"
+        iyy="1.5162E-06"
+        iyz="-6.8315E-07"
+        izz="4.847E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gripper-urdf-assembly/meshes/left_gripper_finger_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.29804 0.29804 0.29804 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gripper-urdf-assembly/meshes/left_gripper_finger_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_gripper_finger_joint"
+    type="prismatic">
+    <origin
+      xyz="0 0.039 0.07435"
+      rpy="0 0 0" />
+    <parent
+      link="gripper_base_link" />
+    <child
+      link="left_gripper_finger_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="0"
+      upper="0.24"
+      effort="10"
+      velocity="1" />
+  </joint>
+  <link
+    name="right_gripper_finger_link">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gripper-urdf-assembly/meshes/right_gripper_finger_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gripper-urdf-assembly/meshes/right_gripper_finger_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_gripper_finger_joint"
+    type="prismatic">
+    <origin
+      xyz="0 -0.039 0.07435"
+      rpy="0 0 0" />
+    <parent
+      link="gripper_base_link" />
+    <child
+      link="right_gripper_finger_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="0"
+      upper="0.24"
+      effort="10"
+      velocity="1" />
+    <mimic
+      joint="left_gripper_finger_joint"
+      multiplier="1"
+      offset="0" />
+  </joint>
+</robot>
