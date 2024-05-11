@@ -3,7 +3,7 @@
      Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot
-  name="gripper-urdf-assembly">
+  name="ssg48_gripper" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <link
     name="gripper_base_link">
     <inertial>
@@ -26,7 +26,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://gripper-urdf-assembly/meshes/gripper_base_link.STL" />
+          filename="package://ssg48_gripper_description/meshes/gripper_base_link.stl" />
       </geometry>
       <material
         name="">
@@ -40,7 +40,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://gripper-urdf-assembly/meshes/gripper_base_link.STL" />
+          filename="package://ssg48_gripper_description/meshes/gripper_base_link.stl" />
       </geometry>
     </collision>
   </link>
@@ -66,7 +66,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://gripper-urdf-assembly/meshes/left_gripper_finger_link.STL" />
+          filename="package://ssg48_gripper_description/meshes/left_gripper_finger_link.stl" />
       </geometry>
       <material
         name="">
@@ -80,7 +80,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://gripper-urdf-assembly/meshes/left_gripper_finger_link.STL" />
+          filename="package://ssg48_gripper_description/meshes/left_gripper_finger_link.stl" />
       </geometry>
     </collision>
   </link>
@@ -98,7 +98,7 @@
       xyz="0 -1 0" />
     <limit
       lower="0"
-      upper="0.24"
+      upper="0.024"
       effort="10"
       velocity="1" />
   </joint>
@@ -124,7 +124,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://gripper-urdf-assembly/meshes/right_gripper_finger_link.STL" />
+          filename="package://ssg48_gripper_description/meshes/right_gripper_finger_link.stl" />
       </geometry>
       <material
         name="">
@@ -138,7 +138,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://gripper-urdf-assembly/meshes/right_gripper_finger_link.STL" />
+          filename="package://ssg48_gripper_description/meshes/right_gripper_finger_link.stl" />
       </geometry>
     </collision>
   </link>
@@ -156,7 +156,7 @@
       xyz="0 1 0" />
     <limit
       lower="0"
-      upper="0.24"
+      upper="0.024"
       effort="10"
       velocity="1" />
     <mimic
