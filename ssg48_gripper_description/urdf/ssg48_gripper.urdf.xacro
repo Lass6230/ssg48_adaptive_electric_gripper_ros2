@@ -88,14 +88,14 @@
     name="left_gripper_finger_joint"
     type="prismatic">
     <origin
-      xyz="0 0.039 0.07435"
+      xyz="0 0.015 0.07435"
       rpy="0 0 0" />
     <parent
       link="gripper_base_link" />
     <child
       link="left_gripper_finger_link" />
     <axis
-      xyz="0 -1 0" />
+      xyz="0 1 0" />
     <limit
       lower="0"
       upper="0.024"
@@ -145,15 +145,18 @@
   <joint
     name="right_gripper_finger_joint"
     type="prismatic">
-    <origin
+    <!-- <origin
       xyz="0 -0.039 0.07435"
+      rpy="0 0 0" /> -->
+    <origin
+      xyz="0 -0.015 0.07435"
       rpy="0 0 0" />
     <parent
       link="gripper_base_link" />
     <child
       link="right_gripper_finger_link" />
     <axis
-      xyz="0 1 0" />
+      xyz="0 -1 0" />
     <limit
       lower="0"
       upper="0.024"

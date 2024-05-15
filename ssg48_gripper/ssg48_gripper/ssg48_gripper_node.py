@@ -3,69 +3,114 @@ import math
 from geometry_msgs.msg import TransformStamped
 
 import numpy as np
+import can
 
 import rclpy
 from rclpy.node import Node
-
+from rclpy.action import ActionServer
 from tf2_ros import TransformBroadcaster
 
 from turtlesim.msg import Pose
 import Spectral_BLDC as Spectral
 import time
 
-def quaternion_from_euler(ai, aj, ak):
-    ai /= 2.0
-    aj /= 2.0
-    ak /= 2.0
-    ci = math.cos(ai)
-    si = math.sin(ai)
-    cj = math.cos(aj)
-    sj = math.sin(aj)
-    ck = math.cos(ak)
-    sk = math.sin(ak)
-    cc = ci*ck
-    cs = ci*sk
-    sc = si*ck
-    ss = si*sk
+from sensor_msgs.msg import JointState
+from ssg48_gripper_msgs.action import Grasp, Homing, Move
 
-    q = np.empty((4, ))
-    q[0] = cj*sc - sj*cs
-    q[1] = cj*ss + sj*cc
-    q[2] = cj*cs - sj*sc
-    q[3] = cj*cc + sj*ss
 
-    return q
-
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 
 class ssg48Gripper(Node):
 
     def __init__(self):
         super().__init__('ssg48_gripper')
-
+        # sudo ip link set dev can0 up type can bitrate 1000000
         
 
         # Initialize the transform broadcaster
-        self.tf_broadcaster = TransformBroadcaster(self)
-        # Communication1 = Spectral.CanCommunication(bustype='socketcan', channel='can0', bitrate=1000000)
-        self.Communication1 = Spectral.CanCommunication(bustype='slcan', channel='/dev/ttyACM0', bitrate=1000000)
+        # self.tf_broadcaster = TransformBroadcaster(self)
+        self.publisher_ = self.create_publisher(JointState, 'joint_states', 10)
+
+        self._action_server = ActionServer(
+            self,
+            Grasp,
+            'ssg48_gripper/grasp',
+            self.execute_grasp_callback)
+        
+        self._action_server = ActionServer(
+            self,
+            Homing,
+            'ssg48_gripper/homing',
+            self.execute_homing_callback)
+        
+        self._action_server = ActionServer(
+            self,
+            Move,
+            'ssg48_gripper/move',
+            self.execute_move_callback)
+
+        connected = 0
+        try:
+
+            self.Communication1 = Spectral.CanCommunication(bustype='socketcan', channel='can0', bitrate=1000000)
+            print("connected with socketcan")
+            connected = 1
+        except:
+            print("not connected with socketcan")
+            connected = 0
+        if connected == 0:
+            try:
+                self.Communication1 = Spectral.CanCommunication(bustype='slcan', channel='/dev/ttyACM0', bitrate=1000000)
+                print("connected with slcan")
+            except:
+                print("not connected with slcan")
+        
+        # bus = can.Bus(interface="gs_usb", channel=dev.product, index=0, bitrate=250000)
         self.Gripper = Spectral.SpectralCAN(node_id=0, communication=self.Communication1)
         self.Gripper.Send_Clear_Error()
 
         self.Gripper.Send_gripper_calibrate()
 
-        timer_period = 0.1  # seconds
+        timer_period = 0.05  # seconds
         self.i = 1
-        time.sleep(5)
+        time.sleep(3.0)
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
         # self.timer = self.create_timer(4.0, self.timer_callback2)
-        self.var = 1
+        # self.var = 1
+
+        self.max_width = 0.048
+        self.position_mm = 0.0
+        
     
+    def execute_grasp_callback(self, goal_handle):
+        self.get_logger().info('Executing grasp goal...')
+        
+
+        self.Gripper.Send_gripper_data_pack(int((1-(goal_handle.request.width*255))*self.max_width),int(goal_handle.request.speed),int(goal_handle.request.force),1,1,0,0) 
+
+
+    def execute_homing_callback(self, goal_handle):
+        self.get_logger().info('Executing homing goal...')
+        self.Gripper.Send_Clear_Error()
+
+        self.Gripper.Send_gripper_calibrate()
+
+
+    def execute_move_callback(self, goal_handle):
+        self.get_logger().info('Executing move goal...')
+        # goal_handle.request
+        self.Gripper.Send_gripper_data_pack(((1-(goal_handle.request.width/255))*self.max_width),goal_handle.request.speed,goal_handle.request.force,1,1,0,0) 
+
+
+
+
     def timer_callback2(self):
         if self.var == 0:
         #Motor1.Send_Clear_Error()
-            self.Gripper.Send_gripper_calibrate()
-        # Motor1.Send_gripper_data_pack(200,20,500,1,1,0,0) 
+            # self.Gripper.Send_gripper_calibrate()
+            self.Gripper.Send_gripper_data_pack(200,20,500,1,1,0,0) 
         # Motor1.Send_gripper_data_pack(50,20,500,1,1,0,0) 
             self.var = 1
         elif self.var == 1:
@@ -77,52 +122,49 @@ class ssg48Gripper(Node):
 
     def timer_callback(self):
         self.Gripper.Send_gripper_data_pack()
-        message, UnpackedMessageID = self.Communication1.receive_can_messages(timeout=0.1)
+        message, UnpackedMessageID = self.Communication1.receive_can_messages(timeout=0.01)
         if message is not None:
             self.Gripper.UnpackData(message,UnpackedMessageID)
             if(UnpackedMessageID.command_id == 60):
 
                 self.get_logger().info('position: "%s"' % str(self.Gripper.gripper_position))
-                self.get_logger().info('number: "%s"' % str(self.i))
-                self.i += 1
+
+                self.get_logger().info('number: "%s"' % str(((1-(self.Gripper.gripper_position/255))*self.max_width)))
+                
+                self.position_mm = ((1-(self.Gripper.gripper_position/255))*self.max_width)
+                joint_state = JointState()
+                joint_state.header.stamp = self.get_clock().now().to_msg()
+                joint_state.header.frame_id = ''
+
+                joint_state.name.append('left_gripper_finger_joint')
+                joint_state.position.append(self.position_mm/2)
+                # joint_state.velocity[0] =
+                # joint_state.effort[0] = 
+
+                joint_state.name.append('right_gripper_finger_joint')
+                joint_state.position.append(self.position_mm/2)
+                # joint_state.velocity[0] =
+                # joint_state.effort[0] = 
+                self.publisher_.publish(joint_state)
+                
             else:
                 self.get_logger().info('UnpackedMessageID.command_id == 60 is not valid')
         else:
             self.get_logger().info('No message after timeout period!')
 
-    def handle_turtle_pose(self, msg):
-        t = TransformStamped()
-
-        # Read message content and assign it to
-        # corresponding tf variables
-        t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = 'world'
-        t.child_frame_id = self.turtlename
-
-        # Turtle only exists in 2D, thus we get x and y translation
-        # coordinates from the message and set the z coordinate to 0
-        t.transform.translation.x = msg.x
-        t.transform.translation.y = msg.y
-        t.transform.translation.z = 0.0
-
-        # For the same reason, turtle can only rotate around one axis
-        # and this why we set rotation in x and y to 0 and obtain
-        # rotation in z axis from the message
-        q = quaternion_from_euler(0, 0, msg.theta)
-        t.transform.rotation.x = q[0]
-        t.transform.rotation.y = q[1]
-        t.transform.rotation.z = q[2]
-        t.transform.rotation.w = q[3]
-
-        # Send the transformation
-        self.tf_broadcaster.sendTransform(t)
+ 
 
 
 def main():
     rclpy.init()
+    
     node = ssg48Gripper()
+
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
+
     try:
-        rclpy.spin(node)
+        executor.spin()
     except KeyboardInterrupt:
         pass
 
