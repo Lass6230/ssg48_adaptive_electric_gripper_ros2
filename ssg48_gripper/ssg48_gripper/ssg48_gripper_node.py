@@ -77,11 +77,18 @@ class ssg48Gripper(Node):
         time.sleep(3.0)
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
-        # self.timer = self.create_timer(4.0, self.timer_callback2)
-        # self.var = 1
+        self.timer = self.create_timer(4.0, self.timer_callback2)
+        self.var = 1
 
         self.max_width = 0.048
-        self.position_mm = 0.0
+        self.position = 0.0 #[m]
+        self.pre_position = 0.0 #[tiks]
+        self.speed = 0.0 #[m/s]
+        self.effort = 0.0 #[N]  #force
+        self.radius = 0.006
+        self.encoder_resolution = pow(2,14)
+        self.effort_factor = (50.0-20.0)/(1100-450)
+        print("encoder esolution: ", self.encoder_resolution)
         
     
     def execute_grasp_callback(self, goal_handle):
@@ -110,14 +117,14 @@ class ssg48Gripper(Node):
         if self.var == 0:
         #Motor1.Send_Clear_Error()
             # self.Gripper.Send_gripper_calibrate()
-            self.Gripper.Send_gripper_data_pack(200,20,500,1,1,0,0) 
+            self.Gripper.Send_gripper_data_pack(250,20,200,1,1,0,0) 
         # Motor1.Send_gripper_data_pack(50,20,500,1,1,0,0) 
             self.var = 1
         elif self.var == 1:
-            self.Gripper.Send_gripper_data_pack(100,20,500,1,1,0,0) 
+            self.Gripper.Send_gripper_data_pack(0,20,200,1,1,0,0) 
             self.var = 2
         elif self.var == 2:
-            self.Gripper.Send_gripper_data_pack(10,20,500,1,1,0,0) 
+            self.Gripper.Send_gripper_data_pack(0,20,200,1,1,0,0) 
             self.var = 0
 
     def timer_callback(self):
@@ -127,24 +134,34 @@ class ssg48Gripper(Node):
             self.Gripper.UnpackData(message,UnpackedMessageID)
             if(UnpackedMessageID.command_id == 60):
 
-                self.get_logger().info('position: "%s"' % str(self.Gripper.gripper_position))
+                # self.get_logger().info('position [m]: "%s"' % str(self.Gripper.gripper_position))
 
-                self.get_logger().info('number: "%s"' % str(((1-(self.Gripper.gripper_position/255))*self.max_width)))
                 
-                self.position_mm = ((1-(self.Gripper.gripper_position/255))*self.max_width)
+                
+                self.position = ((1-(self.Gripper.gripper_position/255))*self.max_width)
+                self.speed = ((self.pre_position-self.Gripper.gripper_position)/self.encoder_resolution)*2*math.pi*self.radius
+                self.effort = self.Gripper.gripper_current*self.effort_factor
+                self.pre_position = self.Gripper.gripper_position
+                # self.get_logger().info('number: "%s"' % str(self.position))
+                # self.get_logger().info('speed [m/s]: "%s"' % str(self.speed))
+
+                # self.get_logger().info('effort [N]: "%s"' % str(self.effort))
+
+
+
                 joint_state = JointState()
                 joint_state.header.stamp = self.get_clock().now().to_msg()
                 joint_state.header.frame_id = ''
 
                 joint_state.name.append('left_gripper_finger_joint')
-                joint_state.position.append(self.position_mm/2)
-                # joint_state.velocity[0] =
-                # joint_state.effort[0] = 
+                joint_state.position.append(self.position/2)
+                joint_state.velocity.append(self.speed)
+                joint_state.effort.append(self.effort)
 
                 joint_state.name.append('right_gripper_finger_joint')
-                joint_state.position.append(self.position_mm/2)
-                # joint_state.velocity[0] =
-                # joint_state.effort[0] = 
+                joint_state.position.append(self.position/2)
+                joint_state.velocity.append(self.speed)
+                joint_state.effort.append(self.effort)
                 self.publisher_.publish(joint_state)
                 
             else:

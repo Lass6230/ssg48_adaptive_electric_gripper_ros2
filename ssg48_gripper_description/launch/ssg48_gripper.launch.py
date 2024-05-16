@@ -56,7 +56,7 @@ def generate_launch_description():
  
   # Publish the joint state values for the non-fixed joints in the URDF file.
   # start_joint_state_publisher_cmd = Node(
-  #   condition=UnlessCondition(gui),
+  #   # condition=UnlessCondition(gui),
   #   package='joint_state_publisher',
   #   executable='joint_state_publisher',
   #   parameters=[robot_description],
