@@ -105,7 +105,7 @@ def generate_launch_description():
     package='ssg48_gripper',
     executable='ssg48_gripper',
     name='ssg48_gripper',
-    parameters=[robot_description,bustype,bitrate,channel],
+    parameters=[robot_description,bustype,bitrate,channel,{'joint_state_topic':'gripper_joint_states'}],
     output='screen',
   )
  

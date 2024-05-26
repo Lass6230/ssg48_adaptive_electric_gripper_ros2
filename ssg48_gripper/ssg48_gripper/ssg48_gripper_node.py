@@ -30,10 +30,10 @@ class ssg48Gripper(Node):
         self.declare_parameter('bustype', 'bustype')
         self.declare_parameter('channel', 'channel')
         self.declare_parameter('bitrate', 'bitrate')
-
+        self.declare_parameter('joint_state_topic', 'joint_state_topic')
         # Initialize the transform broadcaster
         # self.tf_broadcaster = TransformBroadcaster(self)
-        self.publisher_ = self.create_publisher(JointState, 'gripper_joint_states', 10)
+        self.publisher_ = self.create_publisher(JointState, self.get_parameter('joint_state_topic').get_parameter_value().string_value, 10)
 
         self._action_server = ActionServer(
             self,
