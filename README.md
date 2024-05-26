@@ -1,9 +1,16 @@
 # ssg48_adaptive_electric_gripper_ros2
 
+
+
 for candleLight USB to CAN adapter
 sudo ip link set dev can0 up type can bitrate 1000000
 
-ros2 launch ssg48_gripper_description ssg48_gripper.launch.py 
+ROS2 Humble
+
+
+
+
+ros2 launch ssg48_gripper ssg48_gripper.launch.py 
 
 
 
