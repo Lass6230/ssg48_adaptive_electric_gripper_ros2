@@ -27,10 +27,13 @@ class ssg48Gripper(Node):
         super().__init__('ssg48_gripper')
         # sudo ip link set dev can0 up type can bitrate 1000000
         
+        self.declare_parameter('bustype', 'bustype')
+        self.declare_parameter('channel', 'channel')
+        self.declare_parameter('bitrate', 'bitrate')
 
         # Initialize the transform broadcaster
         # self.tf_broadcaster = TransformBroadcaster(self)
-        self.publisher_ = self.create_publisher(JointState, 'joint_states', 10)
+        self.publisher_ = self.create_publisher(JointState, 'gripper_joint_states', 10)
 
         self._action_server = ActionServer(
             self,
@@ -52,13 +55,24 @@ class ssg48Gripper(Node):
 
         connected = 0
         try:
-
-            self.Communication1 = Spectral.CanCommunication(bustype='socketcan', channel='can0', bitrate=1000000)
+            bustype_param = self.get_parameter('bustype').get_parameter_value().string_value
+            channel_param = self.get_parameter('channel').get_parameter_value().string_value
+            bitrate_param = self.get_parameter('bitrate').get_parameter_value().integer_value
+            self.Communication1 = Spectral.CanCommunication(bustype=bustype_param, channel=channel_param, bitrate=bitrate_param)
             print("connected with socketcan")
             connected = 1
         except:
             print("not connected with socketcan")
             connected = 0
+        if connected == 0:
+            try:
+
+                self.Communication1 = Spectral.CanCommunication(bustype='socketcan', channel='can0', bitrate=1000000)
+                print("connected with socketcan")
+                connected = 1
+            except:
+                print("not connected with socketcan")
+                connected = 0
         if connected == 0:
             try:
                 self.Communication1 = Spectral.CanCommunication(bustype='slcan', channel='/dev/ttyACM0', bitrate=1000000)
@@ -74,10 +88,10 @@ class ssg48Gripper(Node):
 
         timer_period = 0.05  # seconds
         self.i = 1
-        time.sleep(3.0)
+        time.sleep(0.2)
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
-        self.timer = self.create_timer(4.0, self.timer_callback2)
+        # self.timer = self.create_timer(4.0, self.timer_callback2)
         self.var = 1
 
         self.max_width = 0.048
@@ -89,14 +103,25 @@ class ssg48Gripper(Node):
         self.encoder_resolution = pow(2,14)
         self.effort_factor = (50.0-20.0)/(1100-450)
         print("encoder esolution: ", self.encoder_resolution)
+    
+    def map(self,x,in_min,in_max,out_min,out_max):
+          return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
         
     
     def execute_grasp_callback(self, goal_handle):
         self.get_logger().info('Executing grasp goal...')
         
+        desired_speed = int((goal_handle.request.speed*self.encoder_resolution)/(2*math.pi*self.radius))
+        desired_speed = int(self.map(desired_speed,40,80000,0,255))
+        self.Gripper.Send_gripper_data_pack(int(((1-(goal_handle.request.width/self.max_width))*255)),desired_speed,int(goal_handle.request.force),1,1,0,0) 
+        self.get_logger().info('position [m]: "%s"' % str(int(((1-(goal_handle.request.width/self.max_width))*255))))
+        goal_handle.succeed()
 
-        self.Gripper.Send_gripper_data_pack(int((1-(goal_handle.request.width*255))*self.max_width),int(goal_handle.request.speed),int(goal_handle.request.force),1,1,0,0) 
-
+        grasp = Grasp.Result()
+        grasp.success = True
+        grasp.error = "No error"
+        return grasp
 
     def execute_homing_callback(self, goal_handle):
         self.get_logger().info('Executing homing goal...')
@@ -104,27 +129,40 @@ class ssg48Gripper(Node):
 
         self.Gripper.Send_gripper_calibrate()
 
+        goal_handle.succeed()
+        return Homing.Result()
+
 
     def execute_move_callback(self, goal_handle):
         self.get_logger().info('Executing move goal...')
         # goal_handle.request
-        self.Gripper.Send_gripper_data_pack(((1-(goal_handle.request.width/255))*self.max_width),goal_handle.request.speed,goal_handle.request.force,1,1,0,0) 
+        desired_speed = int((goal_handle.request.speed*self.encoder_resolution)/(2*math.pi*self.radius))
+        desired_speed = int(self.map(desired_speed,40,80000,0,255))
+        # self.get_logger().info('speed [m/s]: "%s"' % str(desired_speed))
+        self.Gripper.Send_gripper_data_pack(int(((1-(goal_handle.request.width/self.max_width))*255)),int(desired_speed),300,1,1,0,0) 
+        
+        self.get_logger().info('position [m]: "%s"' % str(int(((1-(goal_handle.request.width/self.max_width))*255))))
+        
+        goal_handle.succeed()
 
-
-
+        move = Move.Result()
+        move.success = True
+        move.error = "No error"+str(int(((1-(goal_handle.request.width/self.max_width))*255)))
+        return move
 
     def timer_callback2(self):
         if self.var == 0:
         #Motor1.Send_Clear_Error()
             # self.Gripper.Send_gripper_calibrate()
-            self.Gripper.Send_gripper_data_pack(250,20,200,1,1,0,0) 
+            self.Gripper.Send_gripper_data_pack(240,20,700,1,1,0,0) 
+            
         # Motor1.Send_gripper_data_pack(50,20,500,1,1,0,0) 
             self.var = 1
         elif self.var == 1:
-            self.Gripper.Send_gripper_data_pack(0,20,200,1,1,0,0) 
+            self.Gripper.Send_gripper_data_pack(0,20,700,1,1,0,0) 
             self.var = 2
         elif self.var == 2:
-            self.Gripper.Send_gripper_data_pack(0,20,200,1,1,0,0) 
+            self.Gripper.Send_gripper_data_pack(0,20,700,1,1,0,0) 
             self.var = 0
 
     def timer_callback(self):
