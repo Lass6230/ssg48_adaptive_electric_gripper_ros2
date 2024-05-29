@@ -102,6 +102,10 @@ class ssg48Gripper(Node):
         self.radius = 0.006
         self.encoder_resolution = pow(2,14)
         self.effort_factor = (50.0-20.0)/(1100-450)
+
+        # variable for grasp detection. using epsilon
+        self.current_width = 0.0    #[m]
+        self.grasp_max_time = 5.0   #[s]
         print("encoder esolution: ", self.encoder_resolution)
     
     def map(self,x,in_min,in_max,out_min,out_max):
@@ -114,13 +118,27 @@ class ssg48Gripper(Node):
         
         desired_speed = int((goal_handle.request.speed*self.encoder_resolution)/(2*math.pi*self.radius))
         desired_speed = int(self.map(desired_speed,40,80000,0,255))
-        self.Gripper.Send_gripper_data_pack(int(((1-(goal_handle.request.width/self.max_width))*255)),desired_speed,int(goal_handle.request.force),1,1,0,0) 
+        desired_force = goal_handle.request.force/self.effort_factor
+        self.get_logger().info('force [mA]: "%s"' % str(int(desired_force)))
+        self.Gripper.Send_gripper_data_pack(int(((1-(goal_handle.request.width/self.max_width))*255)),desired_speed,int(desired_force),1,1,0,0) 
         self.get_logger().info('position [m]: "%s"' % str(int(((1-(goal_handle.request.width/self.max_width))*255))))
-        goal_handle.succeed()
-
         grasp = Grasp.Result()
-        grasp.success = True
-        grasp.error = "No error"
+        t1 = time.time()
+        while True:
+        
+            if self.current_width <= (goal_handle.request.width + goal_handle.request.epsilon) and self.current_width >= (goal_handle.request.width + goal_handle.request.epsilon):
+                
+                goal_handle.succeed()
+                grasp.success = True
+                grasp.error = "No error"
+                break
+
+            elif time.time()-t1 >= self.grasp_max_time:
+                goal_handle.abort()
+                grasp.success = False
+                grasp.error = "Timed Out"
+                break
+
         return grasp
 
     def execute_homing_callback(self, goal_handle):
@@ -186,6 +204,8 @@ class ssg48Gripper(Node):
                 # self.get_logger().info('effort [N]: "%s"' % str(self.effort))
 
 
+                # update variable for grasp action
+                self.current_width = self.position
 
                 joint_state = JointState()
                 joint_state.header.stamp = self.get_clock().now().to_msg()
