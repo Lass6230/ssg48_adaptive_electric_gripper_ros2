@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="gripper-finger-urdf">
+  <link
+    name="gripper_finger_link">
+    <inertial>
+      <origin
+        xyz="3.8885E-10 0.003093 0.023137"
+        rpy="0 0 0" />
+      <mass
+        value="0.012616" />
+      <inertia
+        ixx="5.6752E-06"
+        ixy="-8.5136E-14"
+        ixz="9.1121E-14"
+        iyy="5.9242E-06"
+        iyz="-9.2723E-07"
+        izz="1.7502E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gripper-finger-urdf/meshes/gripper_finger_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://gripper-finger-urdf/meshes/gripper_finger_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+</robot>
