@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <robot name="gripper" xmlns:xacro="http://www.ros.org/wiki/xacro">
+        
+        <link name="world"/>
+
+        <!-- <xacro:include filename="$(find ssg48_gripper_description)/urdf/ssg48_gripper.urdf.xacro" /> -->
+        <!-- <xacro:include filename="$(find ssg48_gripper_description)/urdf/ssg48.urdf.xacro" />
+        <xacro:ssg48_gripper/> -->
+
+        <xacro:include filename="$(find ssg48_gripper_description)/urdf/standard_gripper_finger.urdf.xacro" />
+        <xacro:standard_gripper_finger finger_prefix="left" parent_link="world">
+            <origin xyz="0.0 0.0 0.0" rpy="0 0 0.0"/>
+        </xacro:standard_gripper_finger>
+
+    <!-- <xacro:standard_gripper_finger finger_prefix="right" parent_link="right_gripper_finger_link">
+		<origin xyz="0.0 0.0 3.14" rpy="0 0 0.0"/>
+	</xacro:standard_gripper_finger> -->
+
+
+
+    </robot>

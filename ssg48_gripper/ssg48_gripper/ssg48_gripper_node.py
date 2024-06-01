@@ -125,8 +125,9 @@ class ssg48Gripper(Node):
         grasp = Grasp.Result()
         t1 = time.time()
         while True:
-        
-            if self.current_width <= (goal_handle.request.width + goal_handle.request.epsilon) and self.current_width >= (goal_handle.request.width + goal_handle.request.epsilon):
+            
+            # print("width: ",str(self.current_width))
+            if self.current_width <= (goal_handle.request.width + goal_handle.request.epsilon) and self.current_width >= (goal_handle.request.width - goal_handle.request.epsilon):
                 
                 goal_handle.succeed()
                 grasp.success = True

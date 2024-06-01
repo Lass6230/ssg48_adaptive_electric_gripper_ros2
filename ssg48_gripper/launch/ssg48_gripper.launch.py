@@ -8,12 +8,13 @@ from launch_ros.substitutions import FindPackageShare
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 from ament_index_python.packages import get_package_share_directory
- 
+
+import xacro
 def generate_launch_description():
  
   robot_description_path = os.path.join(
                             get_package_share_directory("ssg48_gripper_description"),
-                            'urdf/ssg48_gripper.urdf.xacro')
+                            'urdf/ssg48.urdf.xacro')
     
   robot_description_content = open(robot_description_path).read()
     
