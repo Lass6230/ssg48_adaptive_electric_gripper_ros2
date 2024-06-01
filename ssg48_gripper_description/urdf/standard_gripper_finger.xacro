@@ -1,9 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
-     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
-     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<?xml version="1.0"?>
 <robot name="standard_gripper_finger" xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <xacro:macro name="standard_gripper_finger" params="finger_prefix parent_link *origin">
+  <xacro:macro name="standard_gripper_finger" params="finger_prefix parent_link *origin" >
 
   <link
     name="${finger_prefix}gripper_finger_link">
