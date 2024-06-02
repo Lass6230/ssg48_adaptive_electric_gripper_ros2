@@ -14,12 +14,16 @@ def generate_launch_description():
  
   robot_description_path = os.path.join(
                             get_package_share_directory("ssg48_gripper_description"),
-                            'urdf/ssg48_gripper.urdf.xacro')
+                            'urdf/ssg48.urdf.xacro')
+  
+  robot_description_config = xacro.process_file(robot_description_path)
+
+  robot_description = {"robot_description": robot_description_config.toxml()}
+
+  # robot_description_content = open(robot_description_path).read()
     
-  robot_description_content = open(robot_description_path).read()
-    
-  robot_description = {"robot_description": robot_description_content}
- 
+  # robot_description = {"robot_description": robot_description_content}
+  # print(robot_description)
 
   gui = LaunchConfiguration('gui')
   

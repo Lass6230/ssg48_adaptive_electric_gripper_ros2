@@ -3,7 +3,8 @@
      Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot name="ssg48_gripper" xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <!-- <xacro:macro name="ssg48_gripper"> -->
+
+  <xacro:macro name="ssg48_gripper" params="prefix" >
   <link
     name="gripper_base_link">
     <inertial>
@@ -168,5 +169,13 @@
       offset="0" />
   </joint>
 
-  <!-- </xacro:macro> -->
+  </xacro:macro>
+
+
+ 
+
+
+
+
+
 </robot>

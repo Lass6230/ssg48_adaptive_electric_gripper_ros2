@@ -3,7 +3,7 @@
   <xacro:macro name="standard_gripper_finger" params="finger_prefix parent_link *origin" >
 
   <link
-    name="${finger_prefix}gripper_finger_link">
+    name="${finger_prefix}gripper_finger">
     <inertial>
       <origin
         xyz="-1.3878E-17 0.0062414 0.011011"
@@ -24,7 +24,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://ssg48_gripper_description/meshes/gripper_finger_link.STL" />
+          filename="package://ssg48_gripper_description/meshes/standard_gripper_finger_link.STL" />
       </geometry>
       <material
         name="">
@@ -38,7 +38,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://ssg48_gripper_description/meshes/gripper_finger_link.STL" />
+          filename="package://ssg48_gripper_description/meshes/standard_gripper_finger_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -46,7 +46,7 @@
   <joint name="${finger_prefix}gripper_finger_interface" type="fixed">
       <xacro:insert_block name="origin" />
       <parent link="${parent_link}" />
-      <child link="${finger_prefix}gripper_finger_link" />
+      <child link="${finger_prefix}gripper_finger" />
       <!-- <origin xyz="0 0 0" rpy="0 0 0" /> -->
     </joint>
 

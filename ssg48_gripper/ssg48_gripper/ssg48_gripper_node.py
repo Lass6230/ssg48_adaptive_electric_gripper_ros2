@@ -107,6 +107,8 @@ class ssg48Gripper(Node):
         self.current_width = 0.0    #[m]
         self.grasp_max_time = 5.0   #[s]
         print("encoder esolution: ", self.encoder_resolution)
+
+        self.default_epsilon = 0.002
     
     def map(self,x,in_min,in_max,out_min,out_max):
           return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
@@ -162,12 +164,30 @@ class ssg48Gripper(Node):
         
         self.get_logger().info('position [m]: "%s"' % str(int(((1-(goal_handle.request.width/self.max_width))*255))))
         
-        goal_handle.succeed()
 
         move = Move.Result()
-        move.success = True
-        move.error = "No error"+str(int(((1-(goal_handle.request.width/self.max_width))*255)))
+
+        t1 = time.time()
+        while True:
+            
+            # print("width: ",str(self.current_width))
+            if self.current_width <= (goal_handle.request.width + self.default_epsilon) and self.current_width >= (goal_handle.request.width - self.default_epsilon):
+                
+                goal_handle.succeed()
+                move.success = True
+                move.error = "No error"
+                break
+
+            elif time.time()-t1 >= self.grasp_max_time:
+                goal_handle.abort()
+                move.success = False
+                move.error = "Timed Out"
+                break
+
         return move
+
+
+        
 
     def timer_callback2(self):
         if self.var == 0:
