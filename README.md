@@ -3,7 +3,7 @@
 This is a package for using ros2 to control the Source Robotics SSG48 Gripper. See link https://github.com/PCrnjak/SSG-48-adaptive-electric-gripper
 
 for candleLight USB to CAN adapter:
-sudo ip link set dev can0 up type can bitrate 1000000
+`sudo ip link set dev can0 up type can bitrate 1000000`
 
 ROS2 Humble
 
