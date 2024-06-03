@@ -2,7 +2,7 @@
     <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="gripper">
         
         
-        <xacro:arg name="standard_fingers" default='False' />
+        <xacro:arg name="standard_fingers" default='True' />
         
         
 
@@ -27,11 +27,11 @@
                 <xacro:include filename="adaptive_gripper_finger.xacro" />
 
                 <xacro:adaptive_gripper_finger finger_prefix="left_" parent_link="left_gripper_finger_link">
-                            <origin xyz="0.0 0.0 0.0" rpy="0 0 -1.57"/>
+                            <origin xyz="0.0 0.0 0.0" rpy="0 -1.57 -3.14"/>
                 </xacro:adaptive_gripper_finger> 
 
                 <xacro:adaptive_gripper_finger finger_prefix="right_" parent_link="right_gripper_finger_link">
-                        <origin xyz="0.0 0.0 0.0" rpy="0 0 1.57"/>
+                        <origin xyz="0.0 0.0 0.0" rpy="0 -1.57 0"/>
                 </xacro:adaptive_gripper_finger>
         </xacro:unless>
 
