@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
     <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="gripper">
         
-        
+        <link name="world" />
+
         <xacro:arg name="standard_fingers" default='True' />
         
         
 
         <!-- <xacro:include filename="$(find ssg48_gripper_description)/urdf/ssg48_gripper.urdf.xacro" /> -->
         <xacro:include filename="ssg48_gripper.xacro" />
-        <xacro:ssg48_gripper prefix=""/>
-
+        
+        <xacro:ssg48_gripper prefix="" parent_link="world">
+                            <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+                </xacro:ssg48_gripper> 
 
         <xacro:if value="$(arg standard_fingers)">
-                <xacro:include filename="adaptive_gripper_finger.xacro" />
+                <xacro:include filename="standard_gripper_finger.xacro" />
 
                 <xacro:standard_gripper_finger finger_prefix="left_" parent_link="left_gripper_finger_link">
                             <origin xyz="0.0 0.0 0.0" rpy="0 0 -1.57"/>

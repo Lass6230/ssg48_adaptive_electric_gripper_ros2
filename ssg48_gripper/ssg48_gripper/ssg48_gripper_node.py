@@ -106,7 +106,7 @@ class ssg48Gripper(Node):
         # variable for grasp detection. using epsilon
         self.current_width = 0.0    #[m]
         self.grasp_max_time = 5.0   #[s]
-        print("encoder esolution: ", self.encoder_resolution)
+        # print("encoder esolution: ", self.encoder_resolution)
 
         self.default_epsilon = 0.002
     
@@ -149,9 +149,12 @@ class ssg48Gripper(Node):
         self.Gripper.Send_Clear_Error()
 
         self.Gripper.Send_gripper_calibrate()
+        time.sleep(3.0)
 
         goal_handle.succeed()
-        return Homing.Result()
+        homing = Homing.Result()
+        homing.success = True
+        return homing
 
 
     def execute_move_callback(self, goal_handle):
@@ -162,7 +165,7 @@ class ssg48Gripper(Node):
         # self.get_logger().info('speed [m/s]: "%s"' % str(desired_speed))
         self.Gripper.Send_gripper_data_pack(int(((1-(goal_handle.request.width/self.max_width))*255)),int(desired_speed),300,1,1,0,0) 
         
-        self.get_logger().info('position [m]: "%s"' % str(int(((1-(goal_handle.request.width/self.max_width))*255))))
+        # self.get_logger().info('position [m]: "%s"' % str(int(((1-(goal_handle.request.width/self.max_width))*255))))
         
 
         move = Move.Result()
