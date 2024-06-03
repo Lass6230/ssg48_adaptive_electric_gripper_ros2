@@ -59,11 +59,11 @@ def generate_launch_description():
   
 
 
-  bustype = LaunchConfiguration('use_sim_time')
+  bustype = LaunchConfiguration('bustype')
 
-  channel = LaunchConfiguration('use_sim_time')
+  channel = LaunchConfiguration('channel')
 
-  bitrate = LaunchConfiguration('use_sim_time')
+  bitrate = LaunchConfiguration('bitrate')
   
   declare_bustype_cmd = DeclareLaunchArgument(
     name='bustype',
