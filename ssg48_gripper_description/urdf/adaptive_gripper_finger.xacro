@@ -2,10 +2,11 @@
 <!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
      Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
-<robot
-  name="gripper-finger-urdf">
+<robot name="adaptive_gripper_finger" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="adaptive_gripper_finger" params="finger_prefix parent_link *origin" >
+  
   <link
-    name="gripper_finger_link">
+    name="${finger_prefix}gripper_finger">
     <inertial>
       <origin
         xyz="3.8885E-10 0.003093 0.023137"
@@ -26,7 +27,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://gripper-finger-urdf/meshes/gripper_finger_link.STL" />
+          filename="package://ssg48_gripper_description/meshes/adaptive_gripper_finger_link.STL" />
       </geometry>
       <material
         name="">
@@ -40,8 +41,17 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://gripper-finger-urdf/meshes/gripper_finger_link.STL" />
+          filename="package://ssg48_gripper_description/meshes/adaptive_gripper_finger_link.STL" />
       </geometry>
     </collision>
   </link>
+
+  <joint name="${finger_prefix}gripper_finger_interface" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent_link}" />
+      <child link="${finger_prefix}gripper_finger" />
+      <!-- <origin xyz="0 0 0" rpy="0 0 0" /> -->
+    </joint>
+
+  </xacro:macro>
 </robot>

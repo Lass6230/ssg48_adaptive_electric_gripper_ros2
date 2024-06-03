@@ -1,0 +1,28 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/lass6230/github/ar4_ros2/install/ssg48_gripper/lib/python3.10/site-packages",
+        "/home/lass6230/github/ar4_ros2/install/ssg48_gripper_msgs/local/lib/python3.10/dist-packages",
+        "/home/lass6230/github/ar4_ros2/install/ar4_moveit_config/local/lib/python3.10/dist-packages",
+        "/home/lass6230/github/ar4_ros2/install/btcpp_ros2_interfaces/local/lib/python3.10/dist-packages",
+        "/home/lass6230/github/ar4_ros2/install/behavior_tree_ros2_actions/local/lib/python3.10/dist-packages",
+        "/home/lass6230/github/ar4_ros2/install/ar4_vision/lib/python3.10/site-packages",
+        "/home/lass6230/github/ar4_ros2/install/ar4_msgs/local/lib/python3.10/dist-packages",
+        "/home/lass6230/github/ssg48_adaptive_electric_gripper_ros2/install/ssg48_gripper/lib/python3.10/site-packages",
+        "/home/lass6230/github/ssg48_adaptive_electric_gripper_ros2/install/ssg48_gripper_msgs/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/lass6230/github/ar4_ros2/install/ssg48_gripper/lib/python3.10/site-packages",
+        "/home/lass6230/github/ar4_ros2/install/ssg48_gripper_msgs/local/lib/python3.10/dist-packages",
+        "/home/lass6230/github/ar4_ros2/install/ar4_moveit_config/local/lib/python3.10/dist-packages",
+        "/home/lass6230/github/ar4_ros2/install/btcpp_ros2_interfaces/local/lib/python3.10/dist-packages",
+        "/home/lass6230/github/ar4_ros2/install/behavior_tree_ros2_actions/local/lib/python3.10/dist-packages",
+        "/home/lass6230/github/ar4_ros2/install/ar4_vision/lib/python3.10/site-packages",
+        "/home/lass6230/github/ar4_ros2/install/ar4_msgs/local/lib/python3.10/dist-packages",
+        "/home/lass6230/github/ssg48_adaptive_electric_gripper_ros2/install/ssg48_gripper/lib/python3.10/site-packages",
+        "/home/lass6230/github/ssg48_adaptive_electric_gripper_ros2/install/ssg48_gripper_msgs/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}

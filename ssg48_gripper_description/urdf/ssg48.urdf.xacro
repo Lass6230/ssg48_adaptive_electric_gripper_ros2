@@ -2,30 +2,38 @@
     <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="gripper">
         
         
+        <xacro:arg name="standard_fingers" default='False' />
+        
+        
 
         <!-- <xacro:include filename="$(find ssg48_gripper_description)/urdf/ssg48_gripper.urdf.xacro" /> -->
         <xacro:include filename="ssg48_gripper.xacro" />
         <xacro:ssg48_gripper prefix=""/>
 
 
-        <xacro:include filename="standard_gripper_finger.xacro" />
+        <xacro:if value="$(arg standard_fingers)">
+                <xacro:include filename="adaptive_gripper_finger.xacro" />
 
-        <xacro:standard_gripper_finger finger_prefix="left_" parent_link="left_gripper_finger_link">
-                    <origin xyz="0.0 0.0 0.0" rpy="0 0 -1.57"/>
-        </xacro:standard_gripper_finger> 
+                <xacro:standard_gripper_finger finger_prefix="left_" parent_link="left_gripper_finger_link">
+                            <origin xyz="0.0 0.0 0.0" rpy="0 0 -1.57"/>
+                </xacro:standard_gripper_finger> 
 
-        <xacro:standard_gripper_finger finger_prefix="right_" parent_link="right_gripper_finger_link">
-                <origin xyz="0.0 0.0 0.0" rpy="0 0 1.57"/>
-        </xacro:standard_gripper_finger>
-<!-- 
-        <xacro:include filename="standard_gripper_finger.xacro" />
-        <xacro:standard_gripper_finger finger_prefix="left" parent_link="world">
-            <origin xyz="0.0 0.0 0.0" rpy="0 0 0.0"/>
-        </xacro:standard_gripper_finger> -->
+                <xacro:standard_gripper_finger finger_prefix="right_" parent_link="right_gripper_finger_link">
+                        <origin xyz="0.0 0.0 0.0" rpy="0 0 1.57"/>
+                </xacro:standard_gripper_finger>
+        </xacro:if>
 
-    <!-- <xacro:standard_gripper_finger finger_prefix="right" parent_link="right_gripper_finger_link">
-		<origin xyz="0.0 0.0 3.14" rpy="0 0 0.0"/>
-	</xacro:standard_gripper_finger> -->
+        <xacro:unless value="$(arg standard_fingers)">
+                <xacro:include filename="adaptive_gripper_finger.xacro" />
+
+                <xacro:adaptive_gripper_finger finger_prefix="left_" parent_link="left_gripper_finger_link">
+                            <origin xyz="0.0 0.0 0.0" rpy="0 0 -1.57"/>
+                </xacro:adaptive_gripper_finger> 
+
+                <xacro:adaptive_gripper_finger finger_prefix="right_" parent_link="right_gripper_finger_link">
+                        <origin xyz="0.0 0.0 0.0" rpy="0 0 1.57"/>
+                </xacro:adaptive_gripper_finger>
+        </xacro:unless>
 
 
 
