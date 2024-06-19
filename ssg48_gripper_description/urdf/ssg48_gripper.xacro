@@ -4,7 +4,7 @@
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot name="ssg48_gripper" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:macro name="ssg48_gripper" params="prefix parent_link *origin" >
+  <xacro:macro name="ssg48_gripper" params="prefix parent_link *origin gripper_finger_tcp:=0.031" >
   <link
     name="${prefix}gripper_base_link">
     <inertial>
@@ -175,6 +175,18 @@
       <child link="${prefix}gripper_base_link" />
       <!-- <origin xyz="0 0 0" rpy="0 0 0" /> -->
     </joint>
+
+    <link
+    name="${prefix}gripper_tcp_link">
+  </link>
+
+  <joint name="${prefix}gripper_tcp_joint" type="fixed">
+      <parent link="${prefix}gripper_base_link" />
+      <child link="${prefix}gripper_tcp_link" />
+      <!-- <xacro:insert_block name="gripper_tcp" /> -->
+      <origin xyz="0 0 ${gripper_finger_tcp+0.07435}" rpy="0 0 0" />
+    </joint>
+
 
   </xacro:macro>
 

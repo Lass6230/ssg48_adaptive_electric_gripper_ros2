@@ -10,11 +10,15 @@
         <!-- <xacro:include filename="$(find ssg48_gripper_description)/urdf/ssg48_gripper.urdf.xacro" /> -->
         <xacro:include filename="ssg48_gripper.xacro" />
         
-        <xacro:ssg48_gripper prefix="" parent_link="world">
-                            <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
-                </xacro:ssg48_gripper> 
+        
 
         <xacro:if value="$(arg standard_fingers)">
+
+                <xacro:ssg48_gripper prefix="" parent_link="world" gripper_finger_tcp="0.031">
+                            <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+                            <!-- <gripper_tcp xyz="0.0 0.0 ${0.07435+0.031}" rpy="0 0 0"/> -->
+                </xacro:ssg48_gripper> 
+
                 <xacro:include filename="standard_gripper_finger.xacro" />
 
                 <xacro:standard_gripper_finger finger_prefix="left_" parent_link="left_gripper_finger_link">
@@ -27,6 +31,13 @@
         </xacro:if>
 
         <xacro:unless value="$(arg standard_fingers)">
+
+
+                <xacro:ssg48_gripper prefix="" parent_link="world" gripper_finger_tcp="0.070">
+                            <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+                            <!-- <gripper_tcp xyz="0.0 0.0 ${0.07435+0.070}" rpy="0 0 0"/> -->
+                </xacro:ssg48_gripper> 
+
                 <xacro:include filename="adaptive_gripper_finger.xacro" />
 
                 <xacro:adaptive_gripper_finger finger_prefix="left_" parent_link="left_gripper_finger_link">
