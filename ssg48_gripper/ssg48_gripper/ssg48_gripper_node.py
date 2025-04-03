@@ -30,10 +30,11 @@ class ssg48Gripper(Node):
     def __init__(self):
         super().__init__('ssg48_gripper')
         # sudo ip link set dev can0 up type can bitrate 1000000
-        
+        self.declare_parameter('default_speed', 160) # 0 - 255
+        self.default_speed = self.get_parameter('default_speed').get_parameter_value().integer_value
         self.declare_parameter('bustype', 'bustype')
         self.declare_parameter('channel', 'channel')
-        self.declare_parameter('bitrate', 'bitrate')
+        self.declare_parameter('bitrate', 1000000)
         self.declare_parameter('joint_state_topic', 'joint_state_topic')
         # Initialize the transform broadcaster
         # self.tf_broadcaster = TransformBroadcaster(self)
@@ -135,7 +136,7 @@ class ssg48Gripper(Node):
         
         desired_position = int(((1-(position/self.max_width))*255))
         desired_force = max_effort/self.effort_factor
-        self.Gripper.Send_gripper_data_pack(desired_position, 100, int(desired_force), 1, 1, 0, 0)
+        self.Gripper.Send_gripper_data_pack(desired_position, self.default_speed, int(desired_force), 1, 1, 0, 0)
         result = GripperCommand.Result()
         t1 = time.time()
         while True:

@@ -24,8 +24,10 @@ ros2 launch ssg48_gripper ssg48_gripper.launch.py
 ```
 ros2 launch ssg48_gripper ssg48_gripper.launch.py bustype:="socketcan" channel:="can0" bitrate:=1000000
 ```
-
-
+A default speed can be set for the control_msgs/action/GripperCommand action:
+```
+ros2 launch ssg48_gripper ssg48_gripper.launch.py bustype:="socketcan" channel:="can0" bitrate:=1000000 default_speed:=50
+```
 To use the gripper three actions are provided. Homing, Move and Grasp. Grasp have a input called epsilon. its the value the end position are allowed th deviate from the goal position and the grasp is a success. the can be used to evaluate if anything have been grasp.
 
 ```

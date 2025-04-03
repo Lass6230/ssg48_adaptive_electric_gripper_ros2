@@ -59,11 +59,7 @@ def generate_launch_description():
   
 
 
-  bustype = LaunchConfiguration('bustype')
-
-  channel = LaunchConfiguration('channel')
-
-  bitrate = LaunchConfiguration('bitrate')
+  
   
   declare_bustype_cmd = DeclareLaunchArgument(
     name='bustype',
@@ -79,7 +75,19 @@ def generate_launch_description():
     name='bitrate',
     default_value='1000000',
     description='can channel, typical 1000000 or 500000')
-    
+  
+  declare_default_speed_cmd = DeclareLaunchArgument(
+    name='default_speed',
+    default_value='100',
+    description=' GripperCommand action default speed, between 0 - 255')
+  
+  bustype = LaunchConfiguration('bustype')
+
+  channel = LaunchConfiguration('channel')
+
+  bitrate = LaunchConfiguration('bitrate')
+
+  default_speed = LaunchConfiguration('default_speed')
   # Specify the actions
  
   # Publish the joint state values for the non-fixed joints in the URDF file.
@@ -110,7 +118,14 @@ def generate_launch_description():
     package='ssg48_gripper',
     executable='ssg48_gripper',
     name='ssg48_gripper',
-    parameters=[robot_description,bustype,bitrate,channel,{'joint_state_topic':'gripper_joint_states'}],
+    parameters=[{
+      'robot_description': robot_description_config.toxml(),
+        'bustype': bustype,
+        'bitrate': bitrate,
+        'channel': channel,
+        'default_speed': default_speed,
+        'joint_state_topic': 'gripper_joint_states'
+    }],
     output='screen',
   )
  
@@ -138,7 +153,7 @@ def generate_launch_description():
   ld.add_action(declare_channel_cmd)
   ld.add_action(declare_bitrate_cmd)
   ld.add_action(declare_bustype_cmd)
- 
+  ld.add_action(declare_default_speed_cmd)
   # Add any actions
   ld.add_action(start_joint_state_publisher_cmd)
   # ld.add_action(start_joint_state_publisher_gui_node)
