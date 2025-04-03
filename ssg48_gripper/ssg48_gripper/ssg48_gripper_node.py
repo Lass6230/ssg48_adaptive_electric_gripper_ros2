@@ -21,6 +21,10 @@ from ssg48_gripper_msgs.action import Grasp, Homing, Move
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 
+from control_msgs.action import GripperCommand
+from collections import deque
+
+
 class ssg48Gripper(Node):
 
     def __init__(self):
@@ -52,6 +56,8 @@ class ssg48Gripper(Node):
             Move,
             'ssg48_gripper/move',
             self.execute_move_callback)
+        self._gripper_command_server = ActionServer(self, GripperCommand, 'ssg48_gripper/command', self.execute_gripper_command_callback)
+        
 
         connected = 0
         try:
@@ -86,10 +92,10 @@ class ssg48Gripper(Node):
 
         self.Gripper.Send_gripper_calibrate()
 
-        timer_period = 0.05  # seconds
+        self.timer_period = 0.01  # seconds
         self.i = 1
         time.sleep(0.2)
-        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.timer = self.create_timer(self.timer_period, self.timer_callback)
 
         # self.timer = self.create_timer(4.0, self.timer_callback2)
         self.var = 1
@@ -109,11 +115,61 @@ class ssg48Gripper(Node):
         # print("encoder esolution: ", self.encoder_resolution)
 
         self.default_epsilon = 0.002
+
+        self.size = 10
+        self.buffer = deque(maxlen=self.size)
+
+    def average(self):
+        if len(self.buffer) == 0:
+            return 0.0
+        return sum(self.buffer) / len(self.buffer)
     
     def map(self,x,in_min,in_max,out_min,out_max):
           return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
+    def execute_gripper_command_callback(self, goal_handle):
+        self.get_logger().info('Executing gripper command...')
         
+        position = goal_handle.request.command.position
+        max_effort = goal_handle.request.command.max_effort
+        
+        desired_position = int(((1-(position/self.max_width))*255))
+        desired_force = max_effort/self.effort_factor
+        self.Gripper.Send_gripper_data_pack(desired_position, 100, int(desired_force), 1, 1, 0, 0)
+        result = GripperCommand.Result()
+        t1 = time.time()
+        while True:
+            
+            # print("width: ",str(self.current_width))
+            if self.position <= (position + 0.005) and self.position >= (position - 0.005):
+                result.reached_goal = True
+                if self.speed <= 0.001:
+                    result.stalled = True
+                else:
+                    result.stalled = False
+                goal_handle.succeed()
+                
+                break
+            elif self.speed <= 0.001 and time.time()-t1 >= 0.5:
+                result.stalled = True
+                if self.position <= (position + 0.005) and self.position >= (position - 0.005):
+                    result.reached_goal = True
+                else:
+                    result.reached_goal = False
+                goal_handle.succeed()
+                break
+            elif time.time()-t1 >= self.grasp_max_time:
+                goal_handle.abort()
+                
+                break
+        
+        # goal_handle.succeed()
+        
+        result.effort = self.effort
+        result.position = self.position
+   
+        
+        return result
     
     def execute_grasp_callback(self, goal_handle):
         self.get_logger().info('Executing grasp goal...')
@@ -131,6 +187,7 @@ class ssg48Gripper(Node):
             # print("width: ",str(self.current_width))
             if self.current_width <= (goal_handle.request.width + goal_handle.request.epsilon) and self.current_width >= (goal_handle.request.width - goal_handle.request.epsilon):
                 
+                self.speed
                 goal_handle.succeed()
                 grasp.success = True
                 grasp.error = "No error"
@@ -219,7 +276,10 @@ class ssg48Gripper(Node):
                 
                 
                 self.position = ((1-(self.Gripper.gripper_position/255))*self.max_width)
-                self.speed = ((self.pre_position-self.Gripper.gripper_position)/self.encoder_resolution)*2*math.pi*self.radius
+                
+                speed = (((self.pre_position-self.Gripper.gripper_position)/self.encoder_resolution)*2*math.pi*self.radius)/self.timer_period
+                self.buffer.append(speed)
+                self.speed = self.average()
                 self.effort = self.Gripper.gripper_current*self.effort_factor
                 self.pre_position = self.Gripper.gripper_position
                 # self.get_logger().info('number: "%s"' % str(self.position))
