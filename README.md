@@ -1,4 +1,8 @@
 # ssg48_adaptive_electric_gripper_ros2
+```
+pip install python-can
+pip install Spectral-BLDC
+```
 
 This is a package for using ros2 to control the Source Robotics SSG48 Gripper. See link https://github.com/PCrnjak/SSG-48-adaptive-electric-gripper
 
