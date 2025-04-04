@@ -57,7 +57,7 @@ class ssg48Gripper(Node):
             Move,
             'ssg48_gripper/move',
             self.execute_move_callback)
-        self._gripper_command_server = ActionServer(self, GripperCommand, 'ssg48_gripper/command', self.execute_gripper_command_callback)
+        self._gripper_command_server = ActionServer(self, GripperCommand, 'gripper_command', self.execute_gripper_command_callback)
         
 
         connected = 0

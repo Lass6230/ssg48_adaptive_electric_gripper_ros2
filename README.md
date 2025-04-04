@@ -41,5 +41,5 @@ ros2 action send_goal -f /ssg48_gripper/move ssg48_gripper_msgs/action/Move "{wi
 
 ros2 action send_goal -f /ssg48_gripper/grasp ssg48_gripper_msgs/action/Grasp "{width: 0.02, speed: 0.02, force: 15.0, epsilon: 0.01}"
 
-ros2 action send_goal /ssg48_gripper/command control_msgs/action/GripperCommand "{command: {position: 0.012, max_effort: 10.0}}"
+ros2 action send_goal /gripper_command control_msgs/action/GripperCommand "{command: {position: 0.012, max_effort: 10.0}}"
 ```
