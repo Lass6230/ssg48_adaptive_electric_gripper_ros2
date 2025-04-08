@@ -176,16 +176,16 @@
       <!-- <origin xyz="0 0 0" rpy="0 0 0" /> -->
     </joint>
 
-    <link
+    <!-- <link
     name="${prefix}gripper_tcp_link">
-  </link>
+  </link> -->
 
-  <joint name="${prefix}gripper_tcp_joint" type="fixed">
+  <!-- <joint name="${prefix}gripper_tcp_joint" type="fixed">
       <parent link="${prefix}gripper_base_link" />
       <child link="${prefix}gripper_tcp_link" />
-      <!-- <xacro:insert_block name="gripper_tcp" /> -->
+      
       <origin xyz="0 0 ${gripper_finger_tcp+0.07435}" rpy="0 0 0" />
-    </joint>
+    </joint> -->
 
 
   </xacro:macro>
