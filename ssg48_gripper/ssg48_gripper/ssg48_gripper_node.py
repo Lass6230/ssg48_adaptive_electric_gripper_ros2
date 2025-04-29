@@ -36,6 +36,13 @@ class ssg48Gripper(Node):
         self.declare_parameter('channel', 'channel')
         self.declare_parameter('bitrate', 1000000)
         self.declare_parameter('joint_state_topic', 'joint_state_topic')
+        print("namespace:",self.get_namespace())
+        if self.get_namespace() == '/':
+            self.get_logger().info('No namespace provided, using default namespace')
+            self.ns = ""
+        else:
+            self.get_logger().info('Namespace provided: "%s"' % self.get_namespace())
+            self.ns = self.get_namespace()[1:] # remove the leading '/'
         # Initialize the transform broadcaster
         # self.tf_broadcaster = TransformBroadcaster(self)
         self.publisher_ = self.create_publisher(JointState, self.get_parameter('joint_state_topic').get_parameter_value().string_value, 10)
@@ -296,12 +303,12 @@ class ssg48Gripper(Node):
                 joint_state.header.stamp = self.get_clock().now().to_msg()
                 joint_state.header.frame_id = ''
 
-                joint_state.name.append('left_gripper_finger_joint')
+                joint_state.name.append(f'{self.ns}left_gripper_finger_joint')
                 joint_state.position.append(self.position/2)
                 joint_state.velocity.append(self.speed)
                 joint_state.effort.append(self.effort)
 
-                joint_state.name.append('right_gripper_finger_joint')
+                joint_state.name.append(f'{self.ns}right_gripper_finger_joint')
                 joint_state.position.append(self.position/2)
                 joint_state.velocity.append(self.speed)
                 joint_state.effort.append(self.effort)
